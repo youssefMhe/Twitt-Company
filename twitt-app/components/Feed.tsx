@@ -3,7 +3,7 @@ import {RefreshIcon} from "@heroicons/react/outline";
 
 function Feed() {
     return (
-        <div>
+        <div className="border-x col-span-7 lg:col-span-5 sm:col-span-5 md:col-span-5">
             <div className="flex items-center justify-between ">
                 <h1 className="p-5 pb-1 text-xl font-bold">
                     Home</h1>

@@ -13,7 +13,9 @@ function SidebarRow({Icon,title}:Props) {
         rounded-full hover:bg-gray-200
         group">
             <Icon className="h-6 w-6"/>
-            <p className="group-hover:text-twitter">{title}</p>
+            <p className=" hidden md:inline-flex text-base font-light
+            lg:text-xl
+            group-hover:text-twitter">{title}</p>
         </div>
     );
 }
