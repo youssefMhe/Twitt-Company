@@ -4,35 +4,41 @@ import Image from 'next/image'
 import Sidebar from "../components/Sidebar";
 import Feed from "../components/Feed";
 import Widgets from "../components/Widgets";
+import {fetchTweets} from "../utils/fetchTweets";
+import {Tweet} from "../typing";
+interface Props{
+    tweets:Tweet[]
+}
 
-const Home: NextPage = () => {
-  return (
-    <div className="mx-auto  max-h-screen overflow-hidden lg:max-w-7xl">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-        <main className="grid grid-cols-9">
-            {/*slider*/}
-            <Sidebar/>
-            {/*Feed*/}
-            <Feed/>
-            {/*Widgets*/}
-            <Widgets/>
-        </main>
+const Home= ({tweets}:Props) => {
 
-    </div>
-  )
+    return (
+        <div className="mx-auto  max-h-screen overflow-hidden lg:max-w-7xl">
+            <Head>
+                <title>Create Next App</title>
+                <link rel="icon" href="/favicon.ico"/>
+            </Head>
+            <main className="grid grid-cols-9">
+                {/*slider*/}
+                <Sidebar/>
+                {/*Feed*/}
+                <Feed tweets={tweets}/>
+                {/*Widgets*/}
+                <Widgets/>
+            </main>
+
+        </div>
+    )
 }
 
 export default Home
 
-export const getServerSideProps:GetServerSideProps= async (context)=>{
-    const tweets=await fetchTweets();
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const tweets = await fetchTweets();
 
-return{
-    props:{
-
+    return {
+        props: {
+            tweets,
+        }
     }
-}
 }
