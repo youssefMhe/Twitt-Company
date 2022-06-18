@@ -18,10 +18,10 @@ export default NextAuth({
             clientSecret: process.env.GOOGLE_SECRET,
         }),
         // Sign in with passwordless email link
-        EmailProvider({
+       /* EmailProvider({
             server: process.env.MAIL_SERVER,
             from: "<no-reply@example.com>",
-        }),
+        }),*/
         TwitterProvider({
             clientId: process.env.TWITTER_CLIENT_ID,
             clientSecret: process.env.TWITTER_CLIENT__SECRET,
