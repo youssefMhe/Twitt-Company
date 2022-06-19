@@ -9,6 +9,7 @@
     "@heroicons/react": "^1.0.6",
     "@portabletext/react": "^1.0.6",
     "@sanity/image-url": "^1.0.1",
+    "filepond": "^4.30.4",
     "firebase": "^9.8.3",
     "next": "latest",
     "next-auth": "^4.5.0",
@@ -16,9 +17,11 @@
     "nodemailer": "^6.7.5",
     "react": "18.1.0",
     "react-dom": "18.1.0",
+    "react-filepond": "^7.1.2",
     "react-hot-toast": "^2.2.0",
     "react-timeago": "^7.1.0",
-    "react-twitter-embed": "^4.0.4"
+    "react-twitter-embed": "^4.0.4",
+    "upload-js": "^1.48.21"
   },
   "devDependencies": {
     "@types/node": "17.0.35",
