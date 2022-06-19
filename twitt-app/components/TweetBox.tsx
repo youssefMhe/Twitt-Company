@@ -1,5 +1,5 @@
-import React, {useRef, useState} from 'react';
-import { Upload } from "upload-js";
+import React, {Dispatch, SetStateAction, useRef, useState} from 'react';
+import {Upload} from "upload-js";
 import {
     PhotographIcon,
     SearchCircleIcon,
@@ -9,9 +9,15 @@ import {
 } from "@heroicons/react/outline";
 import {useSession} from "next-auth/react";
 import {toast} from "react-hot-toast";
+import {Tweet, TweetBody} from "../typing";
+import {fetchTweets} from "../utils/fetchTweets";
 
-function TweetBox() {
-    const upload = new Upload({ apiKey: "free" });
+interface Props {
+    setTweets: React.Dispatch<React.SetStateAction<Tweet[]>>
+}
+
+function TweetBox({setTweets}: Props) {
+    const upload = new Upload({apiKey: "free"});
     const [input, setInput] = useState<string>("")
     const [image, setImage] = useState<string>("")
     const {data: session} = useSession()
@@ -20,11 +26,11 @@ function TweetBox() {
 
     async function onFileSelected(event) {
         setImage("")
-        const [ file ]    = event.target.files;
-        const { fileUrl } = await upload.uploadFile({
+        const [file] = event.target.files;
+        const {fileUrl} = await upload.uploadFile({
             file,
-            onBegin:    ({ cancel })   => console.log("File upload started!"),
-            onProgress: ({ progress }) => (
+            onBegin: ({cancel}) => console.log("File upload started!"),
+            onProgress: ({progress}) => (
                 toast.success(`File uploading... ${progress}%`, {id: 1},
                 )),
 
@@ -37,8 +43,36 @@ function TweetBox() {
         e.preventDefault()
         if (!imageInputRef.current?.value) return;
         //setImage(imageInputRef.current?.value)
-        imageInputRef.current.value=''
+        imageInputRef.current.value = ''
         setImageUrlBoxOpen(false)
+    }
+    const postTweet = async () => {
+        const tweetInfo: TweetBody = {
+            text: input,
+            username: session?.user?.name || 'Unknown User',
+            profileImg: session?.user?.image || 'https://links.papareact.com/gll',
+            image: image
+        }
+        const result = await fetch(`/api/addTweet`, {
+            body: JSON.stringify(tweetInfo),
+            method: 'POST',
+        })
+
+        const json = await result.json()
+        const newTweets = await fetchTweets();
+        setTweets(newTweets)
+        toast('Tweet Posted ', {
+            icon: '✅'
+        })
+        return json
+    }
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+        e.preventDefault();
+        await postTweet()
+        setImage('')
+        setInput('')
+        setImageUrlBoxOpen(false)
+
     }
 
     return (
@@ -55,17 +89,18 @@ function TweetBox() {
                     <div className="flex  items-center">
                         <div className="flex flex-1  space-x-2 text-twitter">
                             {/*Icon*/}
-                            <div  hidden={ !session} >
-                            <PhotographIcon
-                                onClick={() => setImageUrlBoxOpen(!imageUrlBoxOpen)}
-                                className="w-5 h-5 cursor-pointer transition-transform duration-150 ease-out hover:scale-150"/>
+                            <div hidden={!session}>
+                                <PhotographIcon
+                                    onClick={() => setImageUrlBoxOpen(!imageUrlBoxOpen)}
+                                    className="w-5 h-5 cursor-pointer transition-transform duration-150 ease-out hover:scale-150"/>
                             </div>
-                            <SearchCircleIcon  className="w-5 h-5"/>
+                            <SearchCircleIcon className="w-5 h-5"/>
                             <EmojiHappyIcon className="w-5 h-5"/>
                             <CalendarIcon className="w-5 h-5"/>
                             <LocationMarkerIcon className="w-5 h-5"/>
                         </div>
                         <button disabled={!input || !session}
+                                onClick={handleSubmit}
                                 className=" rounded-full text-white px-5 py-2 font-bold bg-twitter disabled:opacity-40">
                             Tweet
                         </button>
@@ -75,13 +110,16 @@ function TweetBox() {
                             {/*<input ref={imageInputRef}
                                     className="flex-1 bg-transparent p-2 text-white outline-none placeholder:text-white"
                                     type="text" placeholder="Enter Image URL ..."/>*/}
-                            <label className="mt-5 flex  py-2 px-4  flex flex-col  bg-white rounded-md shadow-md tracking-wide uppercase border border-blue cursor-pointer hover:bg-green-500 hover:text-white text-green-500  ease-linear transition-all duration-150">
-                                <CloudUploadIcon  className="fas fa-cloud-upload-alt fa-3x"/>
+                            <label
+                                className="mt-5 flex  py-2 px-4  flex flex-col  bg-white rounded-md shadow-md tracking-wide uppercase border border-blue cursor-pointer hover:bg-green-500 hover:text-white text-green-500  ease-linear transition-all duration-150">
+                                <CloudUploadIcon className="fas fa-cloud-upload-alt fa-3x"/>
                                 <span className="mt-2 text-base leading-normal">Select a image</span>
-                            <input  hidden className="flex-1  bg-twitter/40 rounded-lg w-5 bg-transparent p-2 text-white outline-none placeholder:text-white" type="file" onChange={()=>onFileSelected(event)} />
+                                <input hidden
+                                       className="flex-1  bg-twitter/40 rounded-lg w-5 bg-transparent p-2 text-white outline-none placeholder:text-white"
+                                       type="file" onChange={() => onFileSelected(event)}/>
                             </label>
 
-                            {image&&<label className="mt-5 flex  py-2 px-4  flex flex-col  bg-white rounded-md shadow-md tracking-wide uppercase border border-blue cursor-pointer
+                            {image && <label className="mt-5 flex  py-2 px-4  flex flex-col  bg-white rounded-md shadow-md tracking-wide uppercase border border-blue cursor-pointer
                             hover:bg-red-500 hover:text-white text-red-500 ease-linear transition-all duration-150">
                                 <XCircleIcon className="fas fa-cloud-upload-alt fa-3x"/>
                                 <span className="mt-2 text-base leading-normal">delete image</span>
@@ -97,7 +135,8 @@ function TweetBox() {
                         </form>
                     )
                     }
-                    {image && <img src={image} className="mt-10 h-40 w-full rounded-xl object-contain shadow-lg" alt={image}/>}
+                    {image && <img src={image} className="mt-10 max-h-40 w-full rounded-xl object-contain shadow-lg"
+                                   alt={image}/>}
 
                 </form>
             </div>

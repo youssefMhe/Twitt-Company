@@ -21,6 +21,7 @@
     "react-hot-toast": "^2.2.0",
     "react-timeago": "^7.1.0",
     "react-twitter-embed": "^4.0.4",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "upload-js": "^1.48.21"
   },
   "devDependencies": {
