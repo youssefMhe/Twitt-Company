@@ -57,7 +57,7 @@ function TweetBox({setTweets}: Props) {
             body: JSON.stringify(tweetInfo),
             method: 'POST',
         })
-
+        console.log(result.status)
         const json = await result.json()
         const newTweets = await fetchTweets();
         setTweets(newTweets)
